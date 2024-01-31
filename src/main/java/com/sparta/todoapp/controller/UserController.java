@@ -1,7 +1,8 @@
 package com.sparta.todoapp.controller;
 
+import com.sparta.todoapp.dto.LoginRequestDto;
+import com.sparta.todoapp.dto.LoginResponseDto;
 import com.sparta.todoapp.dto.SignupRequestDto;
-import com.sparta.todoapp.dto.SignupResponseDto;
 import com.sparta.todoapp.dto.SignupResponseDto;
 import com.sparta.todoapp.service.UserService;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user/signup")
-    public SignupResponseDto signup(@Valid @RequestBody SignupRequestDto requestDto, BindingResult bindingResult){
+    public SignupResponseDto signup(@Valid @RequestBody SignupRequestDto signupRequestDto, BindingResult bindingResult){
         //Valid 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(fieldErrors.size()>0){
@@ -35,7 +36,7 @@ public class UserController {
             throw new IllegalArgumentException("잘못된 정보입니다.");
         }
 
-        return userService.signup(requestDto);
+        return userService.signup(signupRequestDto);
     }
 
 }
