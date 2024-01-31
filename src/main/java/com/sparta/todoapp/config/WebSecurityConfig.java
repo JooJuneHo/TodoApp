@@ -70,6 +70,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
+
         http.formLogin((formLogin) ->
                 formLogin
                         .loginPage("/api/user/login").permitAll()

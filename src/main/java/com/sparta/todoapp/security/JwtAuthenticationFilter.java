@@ -2,6 +2,7 @@ package com.sparta.todoapp.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.todoapp.dto.LoginRequestDto;
+import com.sparta.todoapp.dto.LoginResponseDto;
 import com.sparta.todoapp.entity.UserRoleEnum;
 import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.security.UserDetailsImpl;
@@ -45,19 +46,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("로그인 성공");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
         String token = jwtUtil.createToken(username, role);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("로그인 성공, 상태코드 : " + response.getStatus());
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("로그인 실패");
         response.setStatus(401);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("로그인 실패, 상태코드 : " + response.getStatus());
     }
 
 }
