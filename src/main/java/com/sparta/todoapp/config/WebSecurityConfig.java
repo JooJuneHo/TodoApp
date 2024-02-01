@@ -5,8 +5,6 @@ import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.security.JwtAuthenticationFilter;
 import com.sparta.todoapp.security.JwtAuthorizationFilter;
 import com.sparta.todoapp.security.UserDetailsServiceImpl;
-import com.sparta.todoapp.jwt.JwtUtil;
-import com.sparta.todoapp.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -71,10 +69,6 @@ public class WebSecurityConfig {
         );
 
 
-        http.formLogin((formLogin) ->
-                formLogin
-                        .loginPage("/api/user/login").permitAll()
-        );
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
