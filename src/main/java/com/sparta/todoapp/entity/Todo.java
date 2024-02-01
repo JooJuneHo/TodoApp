@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -27,6 +30,9 @@ public class Todo extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+//    @OneToMany(mappedBy = "todo")
+//    private List<Comment> commentList = new ArrayList<>();
 
     public Todo(TodoRequestDto todoRequestDto, User user) {
         this.title = todoRequestDto.getTitle();

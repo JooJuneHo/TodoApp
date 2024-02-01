@@ -22,9 +22,9 @@ public class TodoController {
         return todoservice.createTodo(todoRequestDto, userDetails.getUser());
     }
 
-    @GetMapping("/todos/{id}")
-    public GetTodoResponseDto getTodo(@PathVariable Long id) {
-        return todoservice.getTodo(id);
+    @GetMapping("/todos/{todoId}")
+    public GetTodoResponseDto getTodo(@PathVariable Long todoId) {
+        return todoservice.getTodo(todoId);
     }
 
     @GetMapping("/todos")
@@ -32,18 +32,18 @@ public class TodoController {
         return todoservice.getAllTodos();
     }
 
-    @PutMapping("/todos/{id}")
+    @PutMapping("/todos/{todoId}")
     public GetTodoResponseDto updateTodo(
-            @PathVariable Long id,
+            @PathVariable Long todoId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody TodoRequestDto todoRequestDto) {
-        return todoservice.update(id, userDetails.getUser(),todoRequestDto);
+        return todoservice.update(todoId, userDetails.getUser(),todoRequestDto);
     }
 
-    @PutMapping("/todos/complete/{id}")
+    @PutMapping("/todos/complete/{todoId}")
     public CompleteTodoResponseDto completeTodo(
-            @PathVariable Long id,
+            @PathVariable Long todoId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoservice.complete(id, userDetails.getUser());
+        return todoservice.complete(todoId, userDetails.getUser());
     }
 }
