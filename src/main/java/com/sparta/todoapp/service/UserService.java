@@ -3,8 +3,6 @@ package com.sparta.todoapp.service;
 import com.sparta.todoapp.dto.SignupRequestDto;
 import com.sparta.todoapp.dto.SignupResponseDto;
 import com.sparta.todoapp.entity.User;
-import com.sparta.todoapp.entity.UserRoleEnum;
-import com.sparta.todoapp.jwt.JwtUtil;
 import com.sparta.todoapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +16,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
@@ -40,17 +37,8 @@ public class UserService {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
 
-        //사용자 ROLE 확인
-        UserRoleEnum role = UserRoleEnum.USER;
-        if (requestDto.isAdmin()) {
-            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-            }
-            role = UserRoleEnum.ADMIN;
-        }
-
         //사용자 등록
-        User user = new User(username, password, email, role);
+        User user = new User(username, password, email);
         userRepository.save(user);
 
         return new SignupResponseDto(user);

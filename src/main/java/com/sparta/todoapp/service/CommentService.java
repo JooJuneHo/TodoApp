@@ -19,6 +19,8 @@ public class CommentService {
     private final TodoRepository todoRepository;
     private final CommentRepository commentRepository;
 
+
+
     public CommentResponseDto createComment(Long todoId, CommentRequestDto commentRequestDto, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
                 new IllegalArgumentException("댓글을 작성할 게시글이 없습니다.")
@@ -38,7 +40,7 @@ public class CommentService {
     @Transactional
     public CommentResponseDto updateComment(Long todoId, Long commentId, CommentRequestDto commentRequestDto, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new IllegalArgumentException("댓글을 작성할 게시글이 없습니다.")
+                new IllegalArgumentException("존재하지 않는 게시글입니다.")
         );
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
@@ -59,10 +61,10 @@ public class CommentService {
     }
 
 
-    @Transactional
+    //Todo : ResponseEntity => return type 으로 찾아보기
     public String deleteComment(Long todoId, Long commentId, User user, HttpServletResponse response) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new IllegalArgumentException("댓글을 작성할 게시글이 없습니다.")
+                new IllegalArgumentException("존재하지 않는 게시글입니다.")
         );
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
@@ -81,4 +83,6 @@ public class CommentService {
 
         return "댓글 삭제 성공, 상태 코드 : " + response.getStatus();
     }
+
+
 }

@@ -41,9 +41,7 @@ public class TodoController {
     }
 
     @PutMapping("/todos/complete/{todoId}")
-    public CompleteTodoResponseDto completeTodo(
-            @PathVariable Long todoId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CompleteTodoResponseDto completeTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoservice.complete(todoId, userDetails.getUser());
     }
 }

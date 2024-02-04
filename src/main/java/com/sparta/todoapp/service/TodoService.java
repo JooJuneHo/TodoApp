@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +34,18 @@ public class TodoService {
 
     public List<GetAllTodoResponseDto> getAllTodos() {
         //작성일 기준 내림차순으로 조회
-        List<Todo> todoList = todoRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+        List<Todo> todoList = todoRepository.findAll(Sort.by(Sort.Direction.DESC,"modifiedAt"));
         List<GetAllTodoResponseDto> todoResponseDtoList = new ArrayList<>();
 
         for (Todo todo : todoList) {
             todoResponseDtoList.add(new GetAllTodoResponseDto(todo));
         }
 
+
         return todoResponseDtoList;
     }
+
+
 
     @Transactional
     public GetTodoResponseDto update(Long id, User user, TodoRequestDto todoRequestDto){
@@ -74,4 +76,10 @@ public class TodoService {
 
         return new CompleteTodoResponseDto(todo);
     }
+
+
+
+
 }
+
+

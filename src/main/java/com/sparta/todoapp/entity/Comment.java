@@ -41,6 +41,4 @@ public class Comment {
         this.title = commentRequestDto.getTitle();
         this.contents = commentRequestDto.getContents();
     }
-
-
 }
