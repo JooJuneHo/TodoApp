@@ -1,4 +1,4 @@
-package com.sparta.todoapp.dto;
+package com.sparta.todoapp.dto.comment;
 
 import com.sparta.todoapp.entity.Comment;
 import lombok.Getter;

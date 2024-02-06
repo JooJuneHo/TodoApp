@@ -1,7 +1,7 @@
 package com.sparta.todoapp.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.todoapp.dto.LoginRequestDto;
+import com.sparta.todoapp.dto.user.LoginRequestDto;
 import com.sparta.todoapp.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
 
         String token = jwtUtil.createToken(username);
+        jwtUtil.addJwtToCookie(token, response);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
 
         response.setCharacterEncoding("UTF-8");
@@ -57,6 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("로그인 실패");
+
         response.setStatus(400);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("로그인 실패, 상태코드 : " + response.getStatus());

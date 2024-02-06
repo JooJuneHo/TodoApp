@@ -1,11 +1,12 @@
 package com.sparta.todoapp.controller;
 
-import com.sparta.todoapp.dto.CommentRequestDto;
-import com.sparta.todoapp.dto.CommentResponseDto;
+import com.sparta.todoapp.dto.comment.CommentRequestDto;
+import com.sparta.todoapp.dto.comment.CommentResponseDto;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.CommentService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,11 +35,10 @@ public class CommentController {
     }
 
     @DeleteMapping("/todos/{todoId}/comment/{commentId}")
-    public String deleteComment(
+    public ResponseEntity<String> deleteComment(
             @PathVariable Long todoId,
             @PathVariable Long commentId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            HttpServletResponse response){
-        return commentService.deleteComment(todoId, commentId, userDetails.getUser(), response);
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return commentService.deleteComment(todoId, commentId, userDetails.getUser());
     }
 }

@@ -1,6 +1,6 @@
 package com.sparta.todoapp.entity;
 
-import com.sparta.todoapp.dto.CommentRequestDto;
+import com.sparta.todoapp.dto.comment.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

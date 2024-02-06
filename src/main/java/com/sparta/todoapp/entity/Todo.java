@@ -1,6 +1,6 @@
 package com.sparta.todoapp.entity;
 
-import com.sparta.todoapp.dto.TodoRequestDto;
+import com.sparta.todoapp.dto.todo.TodoRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,11 +27,6 @@ public class Todo extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-
-    public Todo(TodoRequestDto todoRequestDto) {
-        this.title = todoRequestDto.getTitle();
-        this.description = todoRequestDto.getDescription();
-    }
 
     public Todo(TodoRequestDto todoRequestDto, User user) {
         this.title = todoRequestDto.getTitle();

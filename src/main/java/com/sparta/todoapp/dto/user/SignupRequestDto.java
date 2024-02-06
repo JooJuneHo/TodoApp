@@ -1,4 +1,4 @@
-package com.sparta.todoapp.dto;
+package com.sparta.todoapp.dto.user;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;

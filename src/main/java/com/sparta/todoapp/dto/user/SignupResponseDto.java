@@ -1,4 +1,4 @@
-package com.sparta.todoapp.dto;
+package com.sparta.todoapp.dto.user;
 
 import com.sparta.todoapp.entity.User;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 public class SignupResponseDto {
     private String username;
     private String email;
+
 
     public SignupResponseDto(User user) {
         this.username = user.getUsername();

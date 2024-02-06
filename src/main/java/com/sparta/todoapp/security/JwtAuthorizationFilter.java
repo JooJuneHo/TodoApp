@@ -50,6 +50,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
 
+
         filterChain.doFilter(req, res);
     }
 
