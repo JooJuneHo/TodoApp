@@ -1,60 +1,72 @@
 package com.sparta.todoapp.service;
 
-import com.sparta.todoapp.dto.*;
+import com.sparta.todoapp.dto.todo.*;
 import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.exception.NotMatchedUserException;
+import com.sparta.todoapp.exception.NotfoundTodoException;
 import com.sparta.todoapp.repository.TodoRepository;
+import com.sparta.todoapp.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TodoService {
 
     private final TodoRepository todoRepository;
+    private final UserRepository userRepository;
 
     public CreateTodoResponseDto createTodo(TodoRequestDto todoRequestDto, User user) {
+
+
         Todo todo = todoRepository.save(new Todo(todoRequestDto,user));
         return new CreateTodoResponseDto(todo);
     }
 
     public GetTodoResponseDto getTodo(Long id) {
-        Todo todo = todoRepository.findById(id).orElseThrow(()->
-                new IllegalArgumentException("존재하지않는 일정입니다.")
+        Todo todo = todoRepository.findById(id).orElseThrow(
+                NotfoundTodoException::new
         );
         return new GetTodoResponseDto(todo);
     }
 
-    public List<GetAllTodoResponseDto> getAllTodos() {
+    public List<ListTodoResponseDto> getAllTodos() {
         //작성일 기준 내림차순으로 조회
-        List<Todo> todoList = todoRepository.findAll(Sort.by(Sort.Direction.DESC,"modifiedAt"));
-        List<GetAllTodoResponseDto> todoResponseDtoList = new ArrayList<>();
+//        List<Todo> todoList = todoRepository.findAll(Sort.by(Sort.Direction.DESC,"modifiedAt"));
+//        List<GetAllTodoResponseDto> todoResponseDtoList = new ArrayList<>();
+        List<User> userList = userRepository.findAll();
+        List<ListTodoResponseDto> listTodoResponseDto = new ArrayList<>();
 
-        for (Todo todo : todoList) {
-            todoResponseDtoList.add(new GetAllTodoResponseDto(todo));
+        for(User user : userList){
+            listTodoResponseDto.add(new ListTodoResponseDto(user));
         }
 
+//        for (Todo todo : todoList) {
+//            todoResponseDtoList.add(new GetAllTodoResponseDto(todo));
+//        }
 
-        return todoResponseDtoList;
+         return listTodoResponseDto;
     }
-
 
 
     @Transactional
     public GetTodoResponseDto update(Long id, User user, TodoRequestDto todoRequestDto){
-        Todo todo = todoRepository.findById(id).orElseThrow(()->
-                new IllegalArgumentException("존재하지않는 일정입니다.")
+        Todo todo = todoRepository.findById(id).orElseThrow(
+                NotfoundTodoException::new
         );
 
         if(!todo.getUser().getId().equals(user.getId())){
-            throw new IllegalArgumentException("이 일정을 수정할 수 있는 작성자가 아닙니다.");
+            throw new NotMatchedUserException();
         }
 
         todo.Update(todoRequestDto);
@@ -64,22 +76,18 @@ public class TodoService {
 
     @Transactional
     public CompleteTodoResponseDto complete(Long id, User user) {
-        Todo todo = todoRepository.findById(id).orElseThrow(()->
-                new IllegalArgumentException("존재하지않는 일정입니다.")
+        Todo todo = todoRepository.findById(id).orElseThrow(
+                NotfoundTodoException::new
         );
 
         if(!todo.getUser().getId().equals(user.getId())){
-            throw new IllegalArgumentException("이 일정을 완료할 수 있는 작성자가 아닙니다.");
+            throw new NotMatchedUserException();
         }
 
         todo.Complete();
 
         return new CompleteTodoResponseDto(todo);
     }
-
-
-
-
 }
 
 

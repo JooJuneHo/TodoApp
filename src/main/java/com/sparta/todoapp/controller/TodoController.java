@@ -1,10 +1,9 @@
 package com.sparta.todoapp.controller;
 
-import com.sparta.todoapp.dto.*;
+import com.sparta.todoapp.dto.todo.*;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.TodoService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.UserDatabase;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,7 @@ public class TodoController {
     }
 
     @GetMapping("/todos")
-    public List<GetAllTodoResponseDto> getAllTodos() {
+    public List<ListTodoResponseDto> getAllTodos() {
         return todoservice.getAllTodos();
     }
 
@@ -40,7 +39,7 @@ public class TodoController {
         return todoservice.update(todoId, userDetails.getUser(),todoRequestDto);
     }
 
-    @PutMapping("/todos/complete/{todoId}")
+    @PutMapping("/todos/{todoId}/complete")
     public CompleteTodoResponseDto completeTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoservice.complete(todoId, userDetails.getUser());
     }

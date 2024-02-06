@@ -1,7 +1,7 @@
 package com.sparta.todoapp.service;
 
-import com.sparta.todoapp.dto.CommentRequestDto;
-import com.sparta.todoapp.dto.CommentResponseDto;
+import com.sparta.todoapp.dto.comment.CommentRequestDto;
+import com.sparta.todoapp.dto.comment.CommentResponseDto;
 import com.sparta.todoapp.entity.Comment;
 import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
@@ -9,6 +9,9 @@ import com.sparta.todoapp.repository.CommentRepository;
 import com.sparta.todoapp.repository.TodoRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +65,7 @@ public class CommentService {
 
 
     //Todo : ResponseEntity => return type 으로 찾아보기
-    public String deleteComment(Long todoId, Long commentId, User user, HttpServletResponse response) {
+    public ResponseEntity<String> deleteComment(Long todoId, Long commentId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 게시글입니다.")
         );
@@ -81,7 +84,8 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
 
-        return "댓글 삭제 성공, 상태 코드 : " + response.getStatus();
+        return ResponseEntity.ok()
+                .body("댓글 삭제 성공, 상태 코드 : " + HttpStatus.OK);
     }
 
 

@@ -1,13 +1,17 @@
 package com.sparta.todoapp.service;
 
-import com.sparta.todoapp.dto.SignupRequestDto;
-import com.sparta.todoapp.dto.SignupResponseDto;
+import com.sparta.todoapp.dto.user.SignupRequestDto;
+import com.sparta.todoapp.dto.user.SignupResponseDto;
 import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.exception.DuplicateUsernameException;
 import com.sparta.todoapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -27,14 +31,14 @@ public class UserService {
         //회원 중복 확인
         Optional<User> checkUserName = userRepository.findByUsername(username);
         if (checkUserName.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new DuplicateUsernameException();
         }
 
         //email 중복확인
         String email = requestDto.getEmail();
         Optional<User> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
+            throw new IllegalArgumentException("중복된 Email 입니다." + HttpStatus.BAD_REQUEST);
         }
 
         //사용자 등록
