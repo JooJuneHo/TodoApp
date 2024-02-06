@@ -5,6 +5,9 @@ import com.sparta.todoapp.dto.comment.CommentResponseDto;
 import com.sparta.todoapp.entity.Comment;
 import com.sparta.todoapp.entity.Todo;
 import com.sparta.todoapp.entity.User;
+import com.sparta.todoapp.exception.NotMatchedUserException;
+import com.sparta.todoapp.exception.NotfoundCommentException;
+import com.sparta.todoapp.exception.NotfoundTodoException;
 import com.sparta.todoapp.repository.CommentRepository;
 import com.sparta.todoapp.repository.TodoRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,14 +28,14 @@ public class CommentService {
 
 
     public CommentResponseDto createComment(Long todoId, CommentRequestDto commentRequestDto, User user) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new IllegalArgumentException("댓글을 작성할 게시글이 없습니다.")
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                NotfoundTodoException::new
         );
 
         Comment comment = new Comment(commentRequestDto, todo, user);
 
         if (!comment.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("올바르지 않은 작성자입니다.");
+            throw new NotMatchedUserException();
         }
 
         commentRepository.save(comment);
@@ -42,20 +45,20 @@ public class CommentService {
 
     @Transactional
     public CommentResponseDto updateComment(Long todoId, Long commentId, CommentRequestDto commentRequestDto, User user) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 게시글입니다.")
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                NotfoundTodoException::new
         );
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 댓글입니다.")
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                NotfoundCommentException::new
         );
 
         if(!todo.getId().equals(comment.getTodo().getId())){
-            throw new IllegalArgumentException("다른 작성글입니다.");
+            throw new NotMatchedUserException();
         }
 
         if (!comment.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("올바르지 않은 작성자입니다.");
+            throw new NotMatchedUserException();
         }
 
         comment.Update(commentRequestDto, user);
@@ -66,20 +69,20 @@ public class CommentService {
 
     //Todo : ResponseEntity => return type 으로 찾아보기
     public ResponseEntity<String> deleteComment(Long todoId, Long commentId, User user) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 게시글입니다.")
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                NotfoundTodoException::new
         );
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 댓글입니다.")
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                NotfoundCommentException::new
         );
 
         if(!todo.getId().equals(comment.getTodo().getId())){
-            throw new IllegalArgumentException("다른 작성글입니다.");
+            throw new NotMatchedUserException();
         }
 
         if (!comment.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("올바르지 않은 작성자입니다.");
+            throw new NotMatchedUserException();
         }
 
         commentRepository.deleteById(commentId);

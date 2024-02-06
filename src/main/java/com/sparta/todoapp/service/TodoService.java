@@ -41,9 +41,7 @@ public class TodoService {
     }
 
     public List<ListTodoResponseDto> getAllTodos() {
-        //작성일 기준 내림차순으로 조회
-//        List<Todo> todoList = todoRepository.findAll(Sort.by(Sort.Direction.DESC,"modifiedAt"));
-//        List<GetAllTodoResponseDto> todoResponseDtoList = new ArrayList<>();
+        //todo 작성일 기준 내림차순으로 조회
         List<User> userList = userRepository.findAll();
         List<ListTodoResponseDto> listTodoResponseDto = new ArrayList<>();
 
@@ -51,9 +49,7 @@ public class TodoService {
             listTodoResponseDto.add(new ListTodoResponseDto(user));
         }
 
-//        for (Todo todo : todoList) {
-//            todoResponseDtoList.add(new GetAllTodoResponseDto(todo));
-//        }
+
 
          return listTodoResponseDto;
     }

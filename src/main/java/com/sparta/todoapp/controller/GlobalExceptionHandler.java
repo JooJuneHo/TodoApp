@@ -20,6 +20,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ExceptionDto(e.getMessage(), HttpStatus.CONFLICT));
     }
 
+    @ExceptionHandler(NotfoundCommentException.class)
+    public ResponseEntity<ExceptionDto> handleNotfoundCommentException(NotfoundCommentException e){
+        return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage(), HttpStatus.BAD_REQUEST));
+    }
+
     @ExceptionHandler(NotValidationTokenException.class)
     public ResponseEntity<ExceptionDto> handleNotValidationTokenException(NotValidationTokenException e){
         return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage(), HttpStatus.BAD_REQUEST));
