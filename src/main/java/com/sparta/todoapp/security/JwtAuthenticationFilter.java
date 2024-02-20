@@ -6,6 +6,7 @@ import com.sparta.todoapp.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,9 +18,12 @@ import java.io.IOException;
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
+    private final JwtTokenError jwtTokenError;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, JwtTokenError jwtTokenError) {
         this.jwtUtil = jwtUtil;
+        this.jwtTokenError = jwtTokenError;
         setFilterProcessesUrl("/api/user/login");
     }
 
@@ -47,21 +51,31 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
 
-        String token = jwtUtil.createToken(username);
-        jwtUtil.addJwtToCookie(token, response);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        //Access Token 생성
+        String token = jwtUtil.createAccessToken(username);
+        jwtUtil.addAccessTokenToCookie(token, response);
 
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("로그인 성공, 상태코드 : " + response.getStatus());
+        //Refresh Token 생성
+        String refreshToken = jwtUtil.createRefreshToken(username);
+        jwtUtil.addRefreshTokenToCookie(refreshToken, response);
+
+//        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+//
+//        response.setCharacterEncoding("UTF-8");
+//        response.getWriter().write("로그인 성공, 상태코드 : " + response.getStatus());
+        String message = "로그인 성공";
+        jwtTokenError.messageToClient(response, 200, message, "success");
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("로그인 실패");
 
-        response.setStatus(400);
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("로그인 실패, 상태코드 : " + response.getStatus());
+//        response.setStatus(400);
+//        response.setCharacterEncoding("UTF-8");
+//        response.getWriter().write("로그인 실패, 상태코드 : " + response.getStatus());
+        String message = "회원을 찾을 수 없습니다.";
+        jwtTokenError.messageToClient(response, 400, message, "error");
     }
 
 }

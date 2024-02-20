@@ -2,10 +2,13 @@ package com.sparta.todoapp.security;
 
 import com.sparta.todoapp.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,41 +18,64 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 @Slf4j(topic = "JWT 검증 및 인가")
+@RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final JwtTokenError jwtTokenError;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
-        this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
-    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
+        FilterChain filterChain) throws ServletException, IOException {
 
-        String tokenValue = jwtUtil.getJwtFromHeader(req);
+        String accessTokenValue = jwtUtil.getAccessTokenFromRequest(req);
+        String claimToToken;
 
-        if (StringUtils.hasText(tokenValue)) {
+        if (StringUtils.hasText(accessTokenValue)) {
 
-            if (!jwtUtil.validateToken(tokenValue)) {
-                log.error("Token Error");
-                return;
+            accessTokenValue = jwtUtil.substringToken(accessTokenValue);
+            log.info(accessTokenValue);
+            claimToToken = accessTokenValue;
+            try {
+                if (!jwtUtil.validateAccessToken(accessTokenValue)) {
+                    log.error("Token Error");
+                    return;
+                }
+            } catch (ExpiredJwtException e) {
+                logger.error("Expired JWT token, 만료된 JWT AccessToken 입니다.");
+                String refreshTokenValue = jwtUtil.getRefreshTokenFromRequest(req);
+                refreshTokenValue = jwtUtil.substringToken(refreshTokenValue);
+
+                if (StringUtils.hasText(refreshTokenValue) && jwtUtil.validateRefreshToken(
+                    refreshTokenValue)) {
+                    String newAccessToken = jwtUtil.createAccessToken(
+                        jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject());
+                    jwtUtil.addAccessTokenToCookie(newAccessToken, res);
+                    claimToToken = jwtUtil.substringToken(newAccessToken);
+                } else {
+                    jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
+                    return;
+                }
             }
 
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+            Claims info = jwtUtil.getUserInfoFromToken(claimToToken);
 
             try {
                 setAuthentication(info.getSubject());
             } catch (Exception e) {
-                log.error(e.getMessage());
+                jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
                 return;
             }
+        } else if (req.getRequestURI().startsWith("/user/")) {
+            filterChain.doFilter(req, res);
+            return;
+        } else {
+            jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
+            return;
         }
-
 
         filterChain.doFilter(req, res);
     }
@@ -66,6 +92,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // 인증 객체 생성
     private Authentication createAuthentication(String username) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null,
+            userDetails.getAuthorities());
     }
 }
