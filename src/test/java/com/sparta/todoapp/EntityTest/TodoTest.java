@@ -33,7 +33,7 @@ public class TodoTest {
         todoRequestDto = new TodoRequestDto(title, description);
 
         //when
-        todo.Update(title, description);
+        todo.Update(todoRequestDto);
 
         //then
         assertEquals(title,todo.getTitle());
