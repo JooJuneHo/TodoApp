@@ -41,7 +41,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             claimToToken = accessTokenValue;
             try {
                 if (!jwtUtil.validateAccessToken(accessTokenValue)) {
-                    log.error("Token Error");
+                    jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
                     return;
                 }
             } catch (ExpiredJwtException e) {
@@ -56,7 +56,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     jwtUtil.addAccessTokenToCookie(newAccessToken, res);
                     claimToToken = jwtUtil.substringToken(newAccessToken);
                 } else {
-                    jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
+                    jwtTokenError.messageToClient(res, 400, "토큰에 문제1", "failed");
                     return;
                 }
             }
@@ -66,14 +66,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             try {
                 setAuthentication(info.getSubject());
             } catch (Exception e) {
-                jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
+                jwtTokenError.messageToClient(res, 400, "토큰에 문제2", "failed");
                 return;
             }
-        } else if (req.getRequestURI().startsWith("/user/")) {
+        } else if (req.getRequestURI().startsWith("/api/user")) {
             filterChain.doFilter(req, res);
             return;
         } else {
-            jwtTokenError.messageToClient(res, 400, "토큰에 문제", "failed");
+            jwtTokenError.messageToClient(res, 400, "토큰에 문제3", "failed");
             return;
         }
 

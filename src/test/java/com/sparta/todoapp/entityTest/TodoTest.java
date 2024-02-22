@@ -1,4 +1,4 @@
-package com.sparta.todoapp.EntityTest;
+package com.sparta.todoapp.entityTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

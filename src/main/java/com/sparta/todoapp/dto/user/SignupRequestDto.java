@@ -1,11 +1,13 @@
 package com.sparta.todoapp.dto.user;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class SignupRequestDto {
     @NotBlank
     @Size(min = 4, max = 10)

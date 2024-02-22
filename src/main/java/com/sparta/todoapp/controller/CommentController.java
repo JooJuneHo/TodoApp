@@ -1,5 +1,6 @@
 package com.sparta.todoapp.controller;
 
+import com.sparta.todoapp.dto.ResponseDto;
 import com.sparta.todoapp.dto.comment.CommentRequestDto;
 import com.sparta.todoapp.dto.comment.CommentResponseDto;
 import com.sparta.todoapp.security.UserDetailsImpl;
@@ -35,7 +36,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/todos/{todoId}/comment/{commentId}")
-    public ResponseEntity<String> deleteComment(
+    public ResponseEntity<ResponseDto> deleteComment(
             @PathVariable Long todoId,
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){

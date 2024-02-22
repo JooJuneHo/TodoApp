@@ -1,5 +1,6 @@
 package com.sparta.todoapp.entity;
 
+import com.sparta.todoapp.dto.user.SignupRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,11 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+    public User(SignupRequestDto signupRequestDto){
+        this.username = signupRequestDto.getUsername();
+        this.password = signupRequestDto.getPassword();
+        this.email = signupRequestDto.getEmail();
     }
 }

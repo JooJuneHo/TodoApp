@@ -1,9 +1,12 @@
 package com.sparta.todoapp.service;
 
+import com.sparta.todoapp.dto.user.LoginRequestDto;
 import com.sparta.todoapp.dto.user.SignupRequestDto;
 import com.sparta.todoapp.dto.user.SignupResponseDto;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.exception.DuplicateUsernameException;
+import com.sparta.todoapp.exception.NotFoundUserException;
+import com.sparta.todoapp.exception.NotMatchedPasswordException;
 import com.sparta.todoapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,5 +52,14 @@ public class UserService {
     }
 
 
+    public void login(LoginRequestDto loginRequestDto) {
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
 
+        User user = userRepository.findByUsername(username).orElseThrow(NotFoundUserException::new);
+
+        if(!passwordEncoder.matches(password,user.getPassword())){
+            throw new NotMatchedPasswordException();
+        }
+    }
 }

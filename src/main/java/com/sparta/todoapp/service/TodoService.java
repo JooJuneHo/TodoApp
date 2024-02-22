@@ -22,9 +22,8 @@ public class TodoService {
     private final UserRepository userRepository;
 
     public CreateTodoResponseDto createTodo(TodoRequestDto todoRequestDto, User user) {
-
-
-        Todo todo = todoRepository.save(new Todo(todoRequestDto,user));
+        Todo todo = new Todo(todoRequestDto,user);
+        todoRepository.save(todo);
         return new CreateTodoResponseDto(todo);
     }
 

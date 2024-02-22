@@ -1,5 +1,6 @@
 package com.sparta.todoapp.service;
 
+import com.sparta.todoapp.dto.ResponseDto;
 import com.sparta.todoapp.dto.comment.CommentRequestDto;
 import com.sparta.todoapp.dto.comment.CommentResponseDto;
 import com.sparta.todoapp.entity.Comment;
@@ -32,11 +33,11 @@ public class CommentService {
                 NotfoundTodoException::new
         );
 
-        Comment comment = new Comment(commentRequestDto, todo, user);
-
-        if (!comment.getUser().getId().equals(user.getId())) {
+        if (!todo.getUser().getId().equals(user.getId())) {
             throw new NotMatchedUserException();
         }
+
+        Comment comment = new Comment(commentRequestDto, todo, user);
 
         commentRepository.save(comment);
 
@@ -68,7 +69,7 @@ public class CommentService {
 
 
     //Todo : ResponseEntity => return type 으로 찾아보기
-    public ResponseEntity<String> deleteComment(Long todoId, Long commentId, User user) {
+    public ResponseEntity<ResponseDto> deleteComment(Long todoId, Long commentId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 NotfoundTodoException::new
         );
@@ -87,8 +88,7 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
 
-        return ResponseEntity.ok()
-                .body("댓글 삭제 성공, 상태 코드 : " + HttpStatus.OK);
+        return ResponseEntity.ok().body(new ResponseDto("댓글 삭제 성공, 상태 코드 : ",HttpStatus.OK));
     }
 
 
